@@ -1,41 +1,42 @@
 import sys
 
-sys.setrecursionlimit(10**6)
+# sys.setrecursionlimit(10**6)
 input = sys.stdin.readline
-# sys.stdin = open('input.txt', 'r')
 
-# 1. 입력 및 데이터 구조화
+# 1. 상태 정의 및 전처리
 N = int(input())
-# 1-based index [0] padding
-# 구조 분해 할당
-T = [0] * (N + 1)
-P = [0] * (N + 1)
+# 날짜 계산 실수 방지를 위한 padding
+# 1-based index
+T = [0] * (N + 1) # 상담에 걸리는 시간
+P = [0] * (N + 1) # 상담 했을 때 얻는 수익
 for i in range(1, N + 1):
     T[i], P[i] = map(int, input().split())
 
-# 해당 날짜에서 얻을 수 있는 최대 수익 저장
-# N+1일 경계값까지 넉넉하게 패딩
-memo = [-1] * (N + 2)
+dp = [-1] * (N + 2)
 
+# 2. 핵심 로직
 def dfs(day):
-    # 2. 기저 조건 (N+1일은 퇴사일이므로 수익 0)
+    # 3. 종료 조건
     if day > N:
         return 0
 
-    # 3. memoization
-    if memo[day] != -1:
-        return memo[day]
+    # 4. memoization
+    # 이미 최대 수익을 기록했다면 return
+    if dp[day] != -1:
+        return dp[day]
 
-    # 4. 점화식 logic
-
-    # Case A: 오늘 일을 안 함
+    # 4. 점화식
+    # Case A: 상담을 하지 않았을 경우
     res = dfs(day + 1)
 
-    # Case B: 오늘 일을 함 (경계 조건 체크)
+    # Case B: 상담을 했을 경우
     if day + T[day] <= N + 1:
+        # (오늘 수익 + 상담 종료일 이후의 수익) vs Case A의 수익
         res = max(res, P[day] + dfs(day + T[day]))
 
-    memo[day] = res
+    dp[day] = res
     return res
 
+# 결과 출력
 print(dfs(1))
+
