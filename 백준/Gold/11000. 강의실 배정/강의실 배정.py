@@ -1,31 +1,30 @@
-import heapq
 import sys
+from heapq import heappush, heappop
 
-def solve():
-    # 빠른 입력을 위해 sys.stdin.readline 사용
-    n = int(sys.stdin.readline())
-    lectures = []
-    
-    for _ in range(n):
-        lectures.append(list(map(int, sys.stdin.readline().split())))
+input = sys.stdin.readline
+# sys.stdin = open('input.txt', 'r')
 
-    # 1. 시작 시간 기준으로 정렬
-    lectures.sort()
 
-    # 2. 우선순위 큐 생성 (첫 강의의 종료 시간을 먼저 삽입)
-    room = []
-    heapq.heappush(room, lectures[0][1])
+N = int(input())
+arr = []  # 동적 배열
 
-    # 3. 두 번째 강의부터 확인
-    for i in range(1, n):
-        # 현재 가장 빨리 끝나는 강의실의 종료 시간과 다음 강의 시작 시간 비교
-        if lectures[i][0] >= room[0]:
-            heapq.heappop(room)  # 강의실을 이어서 사용할 수 있으므로 기존 종료 시간 제거
-        
-        # 새로운(혹은 갱신된) 종료 시간 삽입
-        heapq.heappush(room, lectures[i][1])
+for _ in range(N):
+    arr.append(list(map(int, input().split())))
 
-    # 4. 큐에 남아있는 원소의 개수가 필요한 강의실 수
-    print(len(room))
+# 1. 시작 시간 순 정렬
+arr.sort()
 
-solve()
+# 2. 우선 순위 큐
+pq = []
+heappush(pq, arr[0][1])  # 첫 강의의 종료 시간 삽입
+
+# 3. 종료 시간 비교 로직
+#
+for i in range(1, N):
+    # 새 강의의 시작 시간과 이전 강의의 종료 시간 비교
+    if arr[i][0] >= pq[0]:
+        heappop(pq)  # 이전 강의 종료
+
+    heappush(pq, arr[i][1])  # 새 강의 시작
+
+print(len(pq))
